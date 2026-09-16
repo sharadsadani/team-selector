@@ -42,9 +42,11 @@ input{font-family:inherit}
 
 /* ---------- header ---------- */
 header{padding:.35rem clamp(.3rem,1vw,.7rem) .3rem;flex:0 0 auto;text-align:center}
-#mandal{
+#mandal{display:block;width:100%;text-align:center;white-space:nowrap;margin:0;overflow:visible}
+#mandalIn{
+  display:inline-block;transform-origin:center center;
   font-family:'Baloo 2',cursive;font-weight:800;white-space:nowrap;line-height:1.02;
-  letter-spacing:-.005em;margin:0;-webkit-text-stroke:0;
+  letter-spacing:-.012em;-webkit-text-stroke:0;
   background:linear-gradient(92deg,#FF8A3D 0%,#FFD166 18%,#FFF3D0 34%,var(--marigold) 50%,
              #FF6FA1 68%,#C9A0FF 82%,#7BD1FF 100%);
   background-size:200% 100%;
@@ -97,7 +99,11 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
   padding:clamp(.5rem,1.2vw,.85rem);display:flex;flex-direction:column;gap:.5rem;min-height:0;
 }
 #boardWrap.solo .panel{width:min(520px,94vw)}
-.panel h2{font-family:'Baloo 2',cursive;margin:0;font-size:clamp(1rem,2.4vw,1.5rem);color:var(--marigold);line-height:1.1}
+.panel{box-shadow:0 10px 26px rgba(0,0,0,.30)}
+.panel h2{font-family:'Baloo 2',cursive;margin:-.15rem -.15rem .15rem;line-height:1.15;text-align:center;
+  font-size:clamp(1rem,2.4vw,1.5rem);color:#3A1E00;padding:.28rem .5rem;border-radius:.65rem;
+  background:linear-gradient(95deg,#FFD166,var(--marigold) 55%,#FF8A3D);
+  box-shadow:0 3px 10px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.55);letter-spacing:.01em}
 .field{display:flex;flex-direction:column;gap:.18rem}
 .field span{font-size:.72rem;font-weight:700;opacity:.8}
 .field input{
@@ -134,11 +140,16 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 #buckets{flex:1 1 auto;min-height:0;display:flex;flex-direction:row;gap:clamp(.3rem,.8vw,.55rem)}
 .bucket{flex:1 1 0;min-width:0}
 @media(max-width:760px){#buckets{flex-direction:column}}
-.bucket{border-radius:.9rem;padding:.35rem .4rem;display:flex;flex-direction:column;min-height:0;color:#1B1033;
-  box-shadow:inset 0 0 0 2px rgba(27,16,51,.12)}
-.bucket .bh{display:flex;align-items:baseline;justify-content:space-between;gap:.3rem;flex:0 0 auto}
-.bucket .bt{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(.62rem,1.25vw,.95rem);line-height:1.05}
-.bucket .bc{font-weight:800;font-size:clamp(.62rem,1.25vw,.92rem);background:rgba(27,16,51,.14);border-radius:.35rem;padding:0 .28rem}
+.bucket{border-radius:.95rem;padding:.3rem .32rem .35rem;display:flex;flex-direction:column;min-height:0;color:#1B1033;
+  box-shadow:0 8px 20px rgba(0,0,0,.30), inset 0 0 0 1.5px rgba(255,255,255,.65);
+  transition:flex-grow .35s ease}
+.bucket .bh{display:flex;align-items:center;justify-content:space-between;gap:.3rem;flex:0 0 auto;
+  background:linear-gradient(100deg,#2A1247,#4A2070);color:#FFE3A6;border-radius:.6rem;padding:.2rem .42rem;
+  box-shadow:0 2px 7px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18)}
+.bucket .bt{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(.62rem,1.25vw,.95rem);line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bucket .bc{font-weight:800;font-size:clamp(.6rem,1.2vw,.9rem);background:var(--marigold);color:#3A1E00;
+  border-radius:.45rem;padding:0 .4rem;min-width:1.7em;text-align:center;flex:0 0 auto}
 .names{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;flex-wrap:nowrap;
   align-content:flex-start;gap:0;padding-top:.2rem;column-gap:.55rem}
 .nm{font-weight:800;line-height:1.16;display:flex;flex-direction:row;align-items:baseline;
@@ -163,10 +174,13 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 
 /* ---------- teams screen ---------- */
 #teamsWrap{flex:1 1 auto;min-height:0;display:grid;gap:clamp(.35rem,1vw,.7rem)}
-.team{border-radius:.9rem;padding:.4rem .5rem;display:flex;flex-direction:column;min-height:0;color:#1B1033;
-  background:var(--b3);box-shadow:inset 0 0 0 2px rgba(27,16,51,.12)}
-.team .th{font-family:'Baloo 2',cursive;font-weight:800;line-height:1;flex:0 0 auto;
-  display:flex;justify-content:space-between;align-items:baseline;gap:.3rem}
+.team{border-radius:.95rem;padding:.3rem .35rem .4rem;display:flex;flex-direction:column;min-height:0;color:#1B1033;
+  background:var(--b3);box-shadow:0 10px 24px rgba(0,0,0,.32), inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.team .th{font-family:'Baloo 2',cursive;font-weight:800;line-height:1.1;flex:0 0 auto;
+  display:flex;justify-content:space-between;align-items:center;gap:.3rem;
+  background:linear-gradient(100deg,#2A1247,#4A2070);color:#FFE3A6;border-radius:.6rem;padding:.18rem .45rem;
+  margin-bottom:.15rem;box-shadow:0 2px 7px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18)}
+.team .th .tn{background:var(--marigold);color:#3A1E00;border-radius:.45rem;padding:0 .4rem;font-size:.72em}
 .team .tl{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.05rem}
 .team .tl div{font-weight:800;line-height:1.14;display:flex;align-items:baseline;justify-content:space-between;
   gap:.4em;min-width:0;break-inside:avoid;-webkit-column-break-inside:avoid}
@@ -182,7 +196,10 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 .modal.on{display:flex}
 .box{width:min(560px,94vw);max-height:92dvh;overflow:auto;background:linear-gradient(170deg,#3A1A57,#26103F);
   border:2px solid var(--line);border-radius:1.1rem;padding:clamp(.8rem,2.4vw,1.4rem);display:flex;flex-direction:column;gap:.7rem}
-.box h3{font-family:'Baloo 2',cursive;margin:0;font-size:clamp(1.15rem,3.4vw,1.8rem);color:var(--marigold)}
+.box h3{font-family:'Baloo 2',cursive;margin:0;font-size:clamp(1.15rem,3.4vw,1.8rem);color:#3A1E00;
+  text-align:center;padding:.25rem .6rem;border-radius:.7rem;
+  background:linear-gradient(95deg,#FFD166,var(--marigold) 55%,#FF8A3D);
+  box-shadow:0 3px 10px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.55)}
 .box p{margin:0;font-size:.92rem;opacity:.9;line-height:1.4}
 .row{display:flex;gap:.5rem}
 .row .btn{flex:1}
@@ -203,7 +220,7 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 <body>
 
 <header>
-  <h1 id="mandal">Shree Balaji Rajasthani Mandal - Ganesh Utsav - 2026</h1>
+  <h1 id="mandal"><span id="mandalIn">Shree Balaji Rajasthani Mandal - Ganesh Utsav - 2026</span></h1>
   <div id="subline"><b>Team Selector</b><i class="dot"></i><span id="whoami">Choose your host number</span></div>
 </header>
 
@@ -225,12 +242,13 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
           <div class="field"><span>Male or female</span>
             <div class="seg"><button id="gM">Male</button><button id="gF">Female</button></div>
           </div>
-          <div class="field"><span>Age (in years)</span><input id="pAge" type="number" min="1" max="120" inputmode="numeric" placeholder="Years"></div>
+          <div class="field"><span>Age (in years)</span><input id="pAge" type="number" min="10" max="120" inputmode="numeric" placeholder="Years (10+)"></div>
           <button class="btn" id="submitPlayer">Register player</button>
         </div>
         <button class="btn alt" id="openReg" style="display:none">Register a player</button>
         <div id="mine"></div>
         <div id="hostsMini"></div>
+        <button class="btn alt" id="leaveBtn">&#8592; Cancel / change host</button>
       </div>
 
       <div id="right">
@@ -358,7 +376,7 @@ let gender = null, seenIds = null, audioReady = false, actx = null;
 
 const $ = s => document.querySelector(s);
 const els = {};
-['mandal','whoami','hostGrid','boardWrap','buckets','totCount','hostCount','mine','hostsMini',
+['mandal','mandalIn','whoami','hostGrid','boardWrap','buckets','totCount','hostCount','mine','hostsMini',
  'teamsWrap','pName','pAge','teamCount','splitBox','splitHead','toast','confetti']
  .forEach(id => els[id] = document.getElementById(id));
 
@@ -443,7 +461,18 @@ function fitNames(el, maxPx){
   if(cols > 1){ el.style.display = 'block'; el.style.columnCount = cols; }
   fitBlock(el, maxPx || 30, 6);
 }
-function fitHeader(){ fitOneLine(els.mandal, Math.max(20, innerHeight*0.17)); }
+/* heading: fills the width on one line, then set 20% larger and condensed to stay on that line */
+function fitHeader(){
+  const el = document.getElementById('mandalIn');
+  const avail = innerWidth - 10;
+  el.style.transform='none'; el.style.fontSize='100px';
+  const w100 = el.getBoundingClientRect().width || 1;
+  const exact = 100 * avail / w100;                       /* size that just fits */
+  const big = Math.min(exact*1.2, innerHeight*0.23);      /* 20% bigger */
+  el.style.fontSize = big + 'px';
+  const k = Math.min(1, avail / (big/100 * w100));        /* squeeze back onto one line */
+  el.style.transform = 'scaleX(' + k.toFixed(4) + ')';
+}
 
 /* ---------- landing ---------- */
 function renderLanding(){
@@ -520,6 +549,18 @@ function freshRound(alsoPlayers){
 }
 $('#resetHosts').onclick = ()=> freshRound(false);
 $('#resetAll').onclick  = ()=> freshRound(true);
+
+/* a host can step out and free their slot */
+$('#leaveBtn').onclick = ()=>{
+  if(!ME) return;
+  const n = ME.no;
+  confirmBox('Leave host #'+n, 'Free host slot #'+n+' and go back to the main page? Players you registered stay on the list.', ()=>{
+    S.remove('hosts/'+n);
+    ME = null; seenIds = null;
+    $('#scBoard').classList.remove('on'); $('#scTeams').classList.remove('on'); $('#scLanding').classList.add('on');
+    els.whoami.textContent = 'Choose your host number';
+  }, 'Go back');
+};
 
 $('#openReg').onclick = ()=>{ $('#mReg').classList.add('on'); setTimeout(()=>els.pName.focus(),60); };
 $('#regDone').onclick = ()=> $('#mReg').classList.remove('on');
@@ -611,6 +652,7 @@ function submitPlayer(){
   if(!name) return toast('Enter the player name');
   if(!gender) return toast('Choose male or female');
   if(!age || age<1 || age>120) return toast('Enter a valid age');
+  if(age < 10) return toast('Below 10 years cannot be registered');
   S.push('players', {name, gender, age, hostNo:ME.no, hostName:ME.name, at:Date.now()});
   els.pName.value=''; els.pAge.value=''; gender=null;
   $('#gM').classList.remove('sel'); $('#gF').classList.remove('sel');
