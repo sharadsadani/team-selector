@@ -83,6 +83,9 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 .hostcard.taken .state{color:#BFFCE6;font-weight:800}
 .hostcard.primary::after{content:'PRIMARY';position:absolute;top:.5rem;right:.5rem;font-size:.55rem;font-weight:800;letter-spacing:.12em;background:var(--marigold);color:#3A1E00;padding:.12rem .38rem;border-radius:.3rem}
 #landHint{flex:0 0 auto;text-align:center;font-size:clamp(.68rem,1.5vw,.9rem);opacity:.72;padding-top:.5rem}
+#landTools{flex:0 0 auto;text-align:center;padding-top:.45rem}
+#landTools .btn{padding:.35rem 1rem;font-size:clamp(.75rem,1.7vw,.98rem);opacity:.85}
+#landTools .btn:hover{opacity:1}
 
 /* ---------- register / board ---------- */
 #boardWrap{flex:1 1 auto;min-height:0;display:grid;gap:clamp(.4rem,1.1vw,.8rem);grid-template-columns:minmax(230px,23%) 1fr}
@@ -209,6 +212,7 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
   <section class="screen on" id="scLanding">
     <div id="hostGrid"></div>
     <div id="landHint">Host&nbsp;#1 is the primary host — the full board, shuffle and team creation happen on that screen.</div>
+    <div id="landTools"><button class="btn alt" id="refreshBtn">&#8635; Refresh — start a fresh round</button></div>
   </section>
 
   <!-- ============ SCREEN 2 : registration + board ============ -->
@@ -262,6 +266,15 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
   <p>Enter your name to take this host slot. Once you submit, the slot is locked for everyone else.</p>
   <div class="field"><span>Your name</span><input id="hostNameIn" autocomplete="off" placeholder="Your name"></div>
   <div class="row"><button class="btn alt" id="mNameCancel">Cancel</button><button class="btn" id="mNameOk">Submit</button></div>
+</div></div>
+
+<!-- fresh round -->
+<div class="modal" id="mReset"><div class="box">
+  <h3>Start a fresh round</h3>
+  <p>All six host slots are cleared, including the primary host, and everyone is sent back to this page. Choose what happens to the registered players.</p>
+  <button class="btn" id="resetHosts">Clear hosts only — keep the player list</button>
+  <button class="btn warn" id="resetAll">Clear hosts AND all registrations</button>
+  <button class="btn alt" id="resetCancel">Cancel</button>
 </div></div>
 
 <!-- primary host registration -->
@@ -493,6 +506,21 @@ function enterBoard(){
   }
   renderHostsMini(); renderBoard();
 }
+/* fresh round — clears every host slot for everyone */
+$('#refreshBtn').onclick = ()=> $('#mReset').classList.add('on');
+$('#resetCancel').onclick = ()=> $('#mReset').classList.remove('on');
+function freshRound(alsoPlayers){
+  $('#mReset').classList.remove('on');
+  S.remove('hosts'); S.remove('teams'); S.set('view','board');
+  if(alsoPlayers) S.remove('players');
+  ME = null; teams = null; seenIds = null;
+  $('#scBoard').classList.remove('on'); $('#scTeams').classList.remove('on'); $('#scLanding').classList.add('on');
+  els.whoami.textContent = 'Choose your host number';
+  toast(alsoPlayers ? 'Fresh round — hosts and registrations cleared' : 'Fresh round — all hosts cleared');
+}
+$('#resetHosts').onclick = ()=> freshRound(false);
+$('#resetAll').onclick  = ()=> freshRound(true);
+
 $('#openReg').onclick = ()=>{ $('#mReg').classList.add('on'); setTimeout(()=>els.pName.focus(),60); };
 $('#regDone').onclick = ()=> $('#mReg').classList.remove('on');
 
