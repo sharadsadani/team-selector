@@ -465,11 +465,11 @@ function fitNames(el, maxPx){
 /* heading: fills the width on one line, then set 20% larger and condensed to stay on that line */
 function fitHeader(){
   const el = document.getElementById('mandalIn');
-  const avail = innerWidth - 10;
+  const avail = (innerWidth - 10) * 0.90;   /* 10% margin so the full line always shows */
   el.style.transform='none'; el.style.fontSize='100px';
   const w100 = el.getBoundingClientRect().width || 1;
   const exact = 100 * avail / w100;                       /* size that just fits */
-  let big = Math.min(exact*1.2, innerHeight*0.23);        /* 20% bigger */
+  let big = Math.min(exact*1.08, innerHeight*0.21);
   el.style.fontSize = big + 'px';
   /* measure for real, then squeeze back onto the one line */
   let k = Math.min(1, avail / (el.getBoundingClientRect().width || 1));
