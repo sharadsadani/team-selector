@@ -142,11 +142,10 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 /* buckets */
 #right{display:flex;flex-direction:column;gap:clamp(.35rem,1vw,.7rem);min-height:0}
 #buckets{flex:1 1 auto;min-height:0;display:flex;flex-direction:row;gap:clamp(.3rem,.8vw,.55rem)}
-.bucket{flex:1 1 0;min-width:0}
-@media(max-width:760px){#buckets{flex-direction:column}}
+.bucket{flex:1 1 0;min-width:0;width:0}
+@media(max-width:760px){#buckets{flex-direction:column}.bucket{width:auto}}
 .bucket{border-radius:.95rem;padding:.3rem .32rem .35rem;display:flex;flex-direction:column;min-height:0;color:#1B1033;
-  box-shadow:0 8px 20px rgba(0,0,0,.30), inset 0 0 0 1.5px rgba(255,255,255,.65);
-  transition:flex-grow .35s ease}
+  box-shadow:0 8px 20px rgba(0,0,0,.30), inset 0 0 0 1.5px rgba(255,255,255,.65)}
 .bucket .bh{display:flex;align-items:center;justify-content:space-between;gap:.3rem;flex:0 0 auto;
   background:linear-gradient(100deg,#2A1247,#4A2070);color:#FFE3A6;border-radius:.6rem;padding:.2rem .42rem;
   box-shadow:0 2px 7px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.18)}
@@ -161,15 +160,16 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
 .nm:last-child{border-bottom:0}
 .nm{break-inside:avoid;-webkit-column-break-inside:avoid}
 .nm .pn{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nm .hn{flex:0 0 auto;font-size:.46em;font-weight:600;opacity:.55;line-height:1;margin-top:0;
+.nm .hn{flex:0 0 auto;font-size:.32em;font-weight:600;opacity:.55;line-height:1;margin-top:0;
   max-width:38%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nm.rm{cursor:pointer}
 .nm.rm:hover .pn{text-decoration:line-through;color:#B00034}
-#statsRow{flex:0 0 auto;display:flex;gap:.45rem;align-items:stretch}
+#statsRow{flex:0 0 auto;display:flex;gap:.35rem;align-items:stretch;flex-wrap:wrap}
+#statsRow .btn{font-size:clamp(.8rem,1.7vw,1rem)}
 #statsRow .chip{background:rgba(255,255,255,.1);border:1.5px solid var(--line);border-radius:.6rem;
   padding:.25rem .6rem;font-weight:800;font-size:clamp(.72rem,1.6vw,.95rem);display:flex;align-items:center;gap:.35rem}
 #statsRow .chip b{color:var(--marigold);font-size:1.15em}
-#statsRow .btn{padding:.3rem .9rem}
+#statsRow .btn{padding:.28rem .7rem}
 #createBtn{flex:0 0 auto;width:100%;padding:clamp(.5rem,1.6vw,.9rem);border-radius:.9rem;
   font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(1.1rem,3.2vw,2rem);line-height:1;
   color:#3A1E00;background:linear-gradient(95deg,#FFD166,var(--marigold) 45%,var(--marigold-d));
@@ -266,6 +266,9 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
           <button class="btn alt" id="shuffleBtn">Shuffle</button>
           <button class="btn alt" id="saveBtn">Save list</button>
           <button class="btn alt" id="loadBtn">Load saved</button>
+          <button class="btn alt" id="dlBtn">Download</button>
+          <button class="btn alt" id="upBtn">Upload</button>
+          <input type="file" id="upFile" accept=".csv,.json,text/csv,application/json" style="display:none">
           <button class="btn warn" id="cancelGame">Cancel game</button>
         </div>
         <button id="createBtn">Create the team</button>
@@ -278,7 +281,6 @@ main{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:0 cla
     <div id="teamsWrap"></div>
     <div id="teamBar">
       <button class="btn alt" id="backBtn">Back to board</button>
-      <button class="btn" id="reshuffleTeams">Shuffle the teams again</button>
       <button class="btn alt" id="saveTeams">Save teams</button>
     </div>
   </section>
@@ -343,8 +345,7 @@ const BUCKETS = [
   {k:'b1', t:'10 – 18 years',  s:'10–18',   c:'var(--b1)'},
   {k:'b2', t:'18 – 30 years',  s:'18–30',   c:'var(--b2)'},
   {k:'b3', t:'30 – 50 years',  s:'30–50',   c:'var(--b3)'},
-  {k:'b4', t:'50+ Male',       s:'50+ male',   c:'var(--b4)'},
-  {k:'b5', t:'50+ Female',     s:'50+ female', c:'var(--b5)'}
+  {k:'b4', t:'50 years & above', s:'50+',    c:'var(--b4)'}
 ];
 const HOSTS = 6;
 const TEAM_TINT = ['#FFF0C9','#DFF3E4','#E2ECFF','#F3E6FF','#FFE4EC','#E6F7FF','#FFEBD6','#EAF5D8','#F0E7FF','#FFE9E9'];
@@ -457,7 +458,7 @@ function fitBlock(el,maxPx,minPx){
   el.style.fontSize=best+'px';
 }
 /* one registration per row; spill into extra columns before the type gets unreadable */
-function fitNames(el, maxPx){
+function fitNames(el, maxPx, factor){
   const n = el.children.length;
   el.style.columnCount = ''; el.style.display = 'flex';
   if(!n) return;
@@ -468,6 +469,7 @@ function fitNames(el, maxPx){
   for(let c = 1; c <= maxCols; c++){ cols = c; if(h / Math.ceil(n/c) >= 17) break; }
   if(cols > 1){ el.style.display = 'block'; el.style.columnCount = cols; }
   fitBlock(el, maxPx || 30, 6);
+  if(factor && factor !== 1) el.style.fontSize = (parseFloat(el.style.fontSize) * factor) + 'px';
 }
 /* heading: fills the width on one line, then set 20% larger and condensed to stay on that line */
 function fitHeader(){
@@ -587,7 +589,7 @@ function bucketOf(p){
   if(a < 18) return 'b1';
   if(a < 30) return 'b2';
   if(a < 50) return 'b3';
-  return p.gender === 'F' ? 'b5' : 'b4';
+  return 'b4';
 }
 function sortedIn(k){
   return Object.keys(players).filter(id=>bucketOf(players[id])===k)
@@ -601,8 +603,6 @@ function renderBoard(){
     const ids = sortedIn(b.k);
     const d = document.createElement('div');
     d.className='bucket'; d.style.background=b.c;
-    /* box grows or shrinks with the number of registrations in it */
-    d.style.flexGrow = (0.55 + (total ? 3.2*ids.length/total : 0)).toFixed(3);
     d.innerHTML = `<div class="bh"><div class="bt">${b.t}</div><div class="bc">${ids.length}</div></div>
                    <div class="names"></div>`;
     const wrap = d.querySelector('.names');
@@ -620,7 +620,7 @@ function renderBoard(){
   });
   els.totCount.textContent = total;
   els.hostCount.textContent = Object.keys(hosts).filter(n=>hosts[n]&&hosts[n].name).length;
-  requestAnimationFrame(()=>document.querySelectorAll('#buckets .names').forEach(n=>fitNames(n,30)));
+  requestAnimationFrame(()=>document.querySelectorAll('#buckets .names').forEach(n=>fitNames(n,30,0.85)));
   renderMine();
 }
 function renderMine(){
@@ -715,7 +715,6 @@ $('#showTeams').onclick = ()=>{
   if(n > Object.keys(players).length) return toast('More teams than players');
   buildTeams(n); $('#mTeam').classList.remove('on'); S.set('view','teams');
 };
-$('#reshuffleTeams').onclick = ()=>{ if(teams) buildTeams(teams.length); };
 
 function buildTeams(n){
   const t = Array.from({length:n},()=>[]);
@@ -783,6 +782,78 @@ $('#loadBtn').onclick = ()=>{
     S.set('players', savedSnap.players); toast('Saved list loaded');
   }, 'Load');
 };
+
+/* ---------- download / upload the player list ---------- */
+function csvCell(v){ v = String(v==null?'':v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+$('#dlBtn').onclick = ()=>{
+  const ids = Object.keys(players);
+  if(!ids.length) return toast('No players to download');
+  const rows = [['Name','Gender','Age','Group','Registered by']];
+  ids.sort((a,b)=>players[a].at-players[b].at).forEach(id=>{
+    const p = players[id], g = (BUCKETS.find(b=>b.k===bucketOf(p))||{}).t||'';
+    rows.push([p.name, p.gender==='F'?'Female':'Male', p.age, g, p.hostName||'']);
+  });
+  const csv = rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const d = new Date(), pad = n=>String(n).padStart(2,'0');
+  const fn = 'player-list-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.csv';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'}));
+  a.download = fn; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  toast('Downloaded '+(rows.length-1)+' players');
+};
+$('#upBtn').onclick = ()=> $('#upFile').click();
+$('#upFile').onchange = e=>{
+  const f = e.target.files && e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    let list = [];
+    try { list = parseList(String(rd.result), f.name); }
+    catch(err){ return toast('Could not read that file'); }
+    if(!list.length) return toast('No valid rows found');
+    confirmBox('Upload player list', list.length+' players found. Replace the current list with these?', ()=>{
+      const obj = {}; const t0 = Date.now();
+      list.forEach((p,i)=>{ obj['up'+t0+'x'+i] = {name:p.name, gender:p.gender, age:p.age,
+        hostNo:(ME?ME.no:1), hostName:p.hostName||'uploaded', at:t0+i}; });
+      S.set('players', obj); toast(list.length+' players uploaded');
+    }, 'Replace');
+  };
+  rd.readAsText(f); e.target.value = '';
+};
+function splitCsv(line){
+  const out=[]; let cur='', q=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(q){ if(c==='"'){ if(line[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ out.push(cur); cur=''; }
+    else cur+=c;
+  }
+  out.push(cur); return out.map(v=>v.trim());
+}
+function parseList(text, fname){
+  const clean=[];
+  const take=(name,gender,age,host)=>{
+    name = String(name||'').trim();
+    const a = parseInt(age,10);
+    if(!name || !a || a<10 || a>120) return;
+    const g = /^f/i.test(String(gender||'')) ? 'F' : 'M';
+    clean.push({name, gender:g, age:a, hostName:String(host||'').trim()});
+  };
+  if(/\.json$/i.test(fname) || text.trim().startsWith('{') || text.trim().startsWith('[')){
+    const j = JSON.parse(text);
+    const arr = Array.isArray(j) ? j : Object.keys(j).map(k=>j[k]);
+    arr.forEach(p=> take(p.name, p.gender, p.age, p.hostName));
+    return clean;
+  }
+  const lines = text.split(/\r?\n/).filter(l=>l.trim());
+  lines.forEach((l,i)=>{
+    const c = splitCsv(l);
+    if(i===0 && /name/i.test(c[0]||'')) return;        /* header row */
+    take(c[0], c[1], c[2], c[4]);
+  });
+  return clean;
+}
 
 /* ---------- confirm ---------- */
 function confirmBox(title, text, yes, yesLabel){
